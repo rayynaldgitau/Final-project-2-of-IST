@@ -1,0 +1,22 @@
+// import axios from 'axios';
+
+// const authService = {
+//      login: async (email, password) => {
+//           try {
+//                const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/login`, { email, password });
+//                if (response.status === 200) {
+//                     const { accessToken, refreshToken } = response.data;
+//                     sessionStorage.setItem('accessToken', accessToken);
+//                     sessionStorage.setItem('refreshToken', refreshToken);
+//                     return { success: true, accessToken, refreshToken };
+//                } else {
+//                     return { success: false, message: 'Invalid credentials' };
+//                }
+//           } catch (error) {
+//                console.error('Login error', error);
+//                return { success: false, message: 'Login failed' };
+//           }
+//      }
+// };
+
+// export default authService;
