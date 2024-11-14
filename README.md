@@ -99,3 +99,15 @@ Design the MySQL database schema to manage goods and sales. Here are the primary
 Conclusion
 
 This proposed solution provides a clear structure for developing an Inventory Management System with a MySQL backend and React.js frontend. Each component is modular, making it easier to manage and extend functionality in the future. Ensure to implement security measures like data validation, authentication, and authorization to protect sensitive data and functionality.
+
+
+
+
+
+![Screenshot 2024-11-14 124934](https://github.com/user-attachments/assets/9e792914-cbfb-4c00-8604-f8fb36c65abc)
+![Screenshot 2024-11-14 124847](https://github.com/user-attachments/assets/bf51e213-bd3c-48f5-a3d5-3b58c0e9d9fe)
+![Screenshot 2024-11-14 125056](https://github.com/user-attachments/assets/f9bee372-32cd-4b61-aaf5-585463a4dc3a)
+![Screenshot 2024-11-14 125040](https://github.com/user-attachments/assets/96032559-171f-4b6a-9f96-a40f0a6067b4)
+![Screenshot 2024-11-14 125023](https://github.com/user-attachments/assets/2c85ccf0-683c-427a-bb80-6dce8d10d197)
+![Screenshot 2024-11-14 125008](https://github.com/user-attachments/assets/d923bbba-2592-4cd2-b8c6-943b83bf5ec5)
+![Screenshot 2024-11-14 124949](https://github.com/user-attachments/assets/c7428a92-3b75-48fe-81d5-21ee5266d213)
