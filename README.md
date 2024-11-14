@@ -1,4 +1,7 @@
 PROBLEM STATEMENT.
+
+
+
 To create an Inventory management system that can manage goods and sales of a given company
 
 PROPOSED SOLUTION.
