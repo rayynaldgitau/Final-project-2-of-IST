@@ -6,8 +6,8 @@ const routes = express.Router();
 
 routes.post('/addSale', SalesController.addSale);
 routes.get('/getSales', SalesController.getSales);
-routes.get('/getSale/:id', SalesController.getSale);
+routes.get('/getSale/:id', SalesController.getSales);
 routes.put('/updateSale/:id', SalesController.updateSale);
 routes.delete('/deleteSale/:id', SalesController.deleteSale);
-routes.post('/makeSale', SalesController.makeSale);
+routes.post('/makeSale', SalesController.addSale);
 module.exports = routes;

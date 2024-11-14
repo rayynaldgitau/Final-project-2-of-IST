@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
 
           productQuantity: {
                type: DataTypes.INTEGER,
-               allowNull: false
+               allowNull: false,
+               defaultValue: 0,
           },
 
           price: {
@@ -31,6 +32,13 @@ module.exports = (sequelize, DataTypes) => {
           product.hasOne(models.inventory, {
                foreignKey: 'product_id',
                as: 'inventory'
+          });
+     };
+
+     product.associate = models => {
+          product.hasMany(models.sales, {
+               foreignKey: 'product_id',
+               as: 'sales' // Optional alias for referencing sales associated with product
           });
      };
 

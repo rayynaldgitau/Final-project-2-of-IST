@@ -1,5 +1,3 @@
-// Dashboard.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBar from '../components/navbar';
@@ -9,10 +7,15 @@ import { calculateTotalAmount } from '../components/utils';
 
 function Dashboard() {
      const [totalAmount, setTotalAmount] = useState(0);
-     const itemCount = useItemCount(); // Get the current value of itemCount
-     const item2Count = useItem2Count()
+     const [productCount, setProductCount] = useState(0);  // State for product count
+     const [userRole, setUserRole] = useState(null);  // State for user role
+     const itemCount = useItemCount();
+     const item2Count = useItem2Count();
+
      useEffect(() => {
           fetchSales();
+          fetchProductCount();
+          fetchUserRole();  // Fetch the user role when component mounts
      }, []);
 
      const fetchSales = async () => {
@@ -23,6 +26,23 @@ function Dashboard() {
                setTotalAmount(newTotalAmount);
           } catch (error) {
                console.error("There was an error fetching the sales!", error);
+          }
+     };
+
+     const fetchProductCount = async () => {
+          try {
+               const response = await axios.get('http://localhost:4001/Products/getProducts');
+               setProductCount(response.data.length);  // Assuming response.data is an array of products
+          } catch (error) {
+               console.error("There was an error fetching the product count!", error);
+          }
+     };
+
+     const fetchUserRole = () => {
+          const token = localStorage.getItem('token');
+          if (token) {
+               const { role } = JSON.parse(atob(token.split('.')[1]));  // Decode JWT payload
+               setUserRole(role);
           }
      };
 
@@ -49,18 +69,33 @@ function Dashboard() {
                                         <div className="w-full md:w-1/2 xl:w-1/3 p-4">
                                              <div className="bg-white shadow-md p-4 rounded">
                                                   <h3 className="text-lg font-bold">Suppliers</h3>
-                                                  <p className="text-gray-600">{itemCount} Suppliers </p>
+                                                  <p className="text-gray-600">{itemCount} Suppliers</p>
                                              </div>
                                         </div>
                                         <div className="w-full md:w-1/2 xl:w-1/3 p-4">
                                              <div className="bg-white shadow-md p-4 rounded">
                                                   <h3 className="text-lg font-bold">Inventory Items</h3>
-                                                  <p className="text-gray-600">{item2Count} Items </p>
+                                                  <p className="text-gray-600">{item2Count} Items</p>
                                              </div>
                                         </div>
+                                        <div className="w-full md:w-1/2 xl:w-1/3 p-4">
+                                             <div className="bg-white shadow-md p-4 rounded">
+                                                  <h3 className="text-lg font-bold">Total Products</h3>
+                                                  <p className="text-gray-600">{productCount} Products</p>
+                                             </div>
+                                        </div>
+                                        {userRole === 'admin' && (
+                                             <div className="w-full md:w-1/2 xl:w-1/3 p-4">
+                                                  <div className="bg-white shadow-md p-4 rounded">
+                                                       <h3 className="text-lg font-bold">Admin Panel</h3>
+                                                       <p className="text-gray-600">
+                                                            <a href="/verify-users" className="text-blue-600 hover:underline">Verify Users</a>
+                                                       </p>
+                                                  </div>
+                                             </div>
+                                        )}
                                    </div>
                               </section>
-
                          </div>
                     </main>
                </div>

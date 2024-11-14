@@ -1,118 +1,142 @@
+// controller/salesController.js
 const { createError } = require('http-errors');
 const db = require('../models/indexStart');
-
-// Use the Sales model
 const Sales = db.sales;
 
 module.exports = {
-     // Add Sale
-     addSale: async (req, res, next) => {
-          try {
-               const info = {
-                    product_id: req.body.product_id,
-                    quantity_sold: req.body.quantity_sold,
-                    sale_date: req.body.sale_date,
-                    total_price: req.body.total_price
-               };
-
-               const sale = await Sales.create(info);
-               res.status(200).send(sale);
-          } catch (error) {
-               next(error);
-          }
-     },
-
-     // Get Sale by id
-     getSale: async (req, res, next) => {
-          try {
-               const id = req.params.id;
-               const sale = await Sales.findOne({ where: { sales_id: id } });
-
-               if (!sale) {
-                    throw createError(404, "Sale does not exist");
-               }
-               res.status(200).send(sale);
-          } catch (error) {
-               next(error);
-          }
-     },
-
-     // Get all Sales
+     // Get all sales with product details
      getSales: async (req, res, next) => {
           try {
-               const sales = await Sales.findAll();
+               const sales = await Sales.findAll({
+                    include: [{
+                         model: db.products,
+                         as: 'product',  // Alias defined in Sales model
+                         attributes: ['product_id', 'productName', 'price'],  // Only get necessary product fields
+                    }],
+               });
+
                res.status(200).json({
                     success: true,
-                    data: sales
+                    data: sales,
                });
           } catch (error) {
-               console.error('Error fetching sales:', error); // Logging the error
+               console.error('Error fetching sales:', error);
                next(error);
           }
      },
 
-     // Update Sale
+     // Add a sale
+     addSale: async (req, res, next) => {
+          try {
+               const { product_id, quantity_sold, sale_date, total_price } = req.body;
+
+               const sale = await Sales.create({
+                    product_id,
+                    quantity_sold,
+                    sale_date,
+                    total_price,
+               });
+
+               res.status(201).send(sale);
+          } catch (error) {
+               next(error);
+          }
+     },
+
+     // Update sale
      updateSale: async (req, res, next) => {
           try {
                const { id } = req.params;
                const { body } = req;
 
-               const [updated] = await Sales.update(body, { where: { sales_id: id } });
+               const [updated] = await Sales.update(body, {
+                    where: { sales_id: id },
+               });
 
                if (!updated) {
-                    throw createError(404, "Sale does not exist");
+                    throw createError(404, 'Sale not found');
                }
 
-               const updatedSale = await Sales.findOne({ where: { sales_id: id } });
+               const updatedSale = await Sales.findOne({
+                    where: { sales_id: id },
+                    include: [{
+                         model: db.products,
+                         as: 'product',
+                    }],
+               });
 
-               if (!updatedSale) {
-                    res.status(404).send({ message: "Sale ID not found" });
-               } else {
-                    res.status(200).send(updatedSale);
-               }
+               res.status(200).send(updatedSale);
           } catch (error) {
                next(error);
           }
      },
-     // Delete Sale
+
+     // Delete sale
      deleteSale: async (req, res, next) => {
           try {
                const id = req.params.id;
 
-               if (!id) {
-                    return res.status(400).send("Sale ID is required");
+               const sale = await Sales.findByPk(id);
+
+               if (!sale) {
+                    return res.status(404).send('Sale item not found');
                }
 
-               const saleItem = await Sales.findByPk(id);
-
-               if (!saleItem) {
-                    return res.status(404).send("Sale item not found");
-               }
-
-               await saleItem.destroy();
+               await sale.destroy();
                res.status(200).send(`Sale item with ID ${id} deleted successfully`);
           } catch (error) {
                console.error(error);
                next(error);
           }
      },
-     makeSale: async (req, res, next) => {
-          try {
-               const { productId, quantitySold } = req.body;
 
-               if (!productId || !quantitySold) {
-                    return res.status(400).send("Product ID and quantity sold are required");
+     makeSale: async (req, res, next) => {
+          const { product_id, quantity_sold } = req.body;
+
+          // Check for valid input
+          if (!product_id || !quantity_sold) {
+               return res.status(400).json({ message: 'Missing required fields' });
+          }
+
+          const t = await db.sequelize.transaction();
+
+          try {
+               // Find the product and lock it to prevent concurrent updates
+               const product = await db.products.findByPk(product_id, { lock: t.LOCK.UPDATE, transaction: t });
+
+               if (!product) {
+                    return res.status(404).json({ message: 'Product not found' });
                }
 
-               const newSale = await Sales.create({
-                    productId,
-                    quantitySold
-               });
+               if (product.productQuantity < quantity_sold) {
+                    return res.status(400).json({ message: 'Not enough stock available' });
+               }
 
-               res.status(201).send(`Sale created successfully with ID ${newSale.id}`);
+               // Update the product quantity
+               product.productQuantity -= quantity_sold;
+               await product.save({ transaction: t });
+
+               // Create the sale entry in the Sales table
+               const total_price = product.price * quantity_sold;
+               const sale = await Sales.create({
+                    product_id,
+                    quantity_sold,
+                    sale_date: new Date(),  // Current date
+                    total_price,
+               }, { transaction: t });
+
+               // Commit the transaction
+               await t.commit();
+
+               return res.status(200).json({
+                    message: 'Sale created successfully',
+                    sale,
+                    updatedProductQuantity: product.productQuantity
+               });
           } catch (error) {
-               console.error(error);
-               next(error);
+               await t.rollback();  // Rollback in case of error
+               console.error('Error making the sale:', error);
+               return res.status(500).json({ message: 'Error making the sale' });
           }
-     },
+     }
 };

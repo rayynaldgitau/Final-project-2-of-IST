@@ -45,7 +45,7 @@ module.exports = {
      },
 
      //get all Products
-     getProducts: async (req, res, next) => {
+     getAllProducts: async (req, res, next) => {
           try {
                const products = await product.findAll()
                res.status(200).send(products)
@@ -56,20 +56,21 @@ module.exports = {
 
      //update Product
      updateProduct: async (req, res, next) => {
-
           try {
-               const id = req.params.id
+               const id = req.params.id;
+               const updated = await db.products.update(req.body, { where: { product_id: id } });
 
-               const [updated] = await product.update(req.body, { where: { product_id: id } })
-               if (!updated) {
-                    throw createError(404, "Product does not exist")
+               if (!updated[0]) {
+                    return res.status(404).json({ message: 'Product not found' });
                }
-               const updatedProduct = await product.findOne({ where: { product_id: id } })
-               res.status(200).send(updatedProduct)
+
+               const updatedProduct = await db.products.findByPk(id);
+               res.status(200).json(updatedProduct);
           } catch (error) {
-               next(error)
+               next(error);
           }
      },
+
 
      //delete Product
      deleteProduct: async (req, res, next) => {

@@ -1,4 +1,4 @@
-const dbConfig = require('../config/dbConfig');
+const dbConfig = require('../config/dbConfig')
 const { Sequelize, DataTypes } = require('sequelize');
 
 const sequelize = new Sequelize(
@@ -48,6 +48,14 @@ db.users = require('./auth.model.js')(sequelize, DataTypes);
 // });
 
 // Define other relationships here...
+
+
+db.sales.belongsTo(db.products, {
+     foreignKey: 'product_id',
+     as: 'product'
+});
+
+
 
 sequelize.sync({ force: false })
      .then(() => {
