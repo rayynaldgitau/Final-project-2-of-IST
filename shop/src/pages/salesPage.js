@@ -65,7 +65,7 @@ const SalesList = () => {
                                    <th className="py-2">Quantity Sold</th>
                                    <th className="py-2">Sale Date</th>
                                    <th className="py-2">Total Price</th>
-                                   <th className="py-2">Actions</th>
+
                               </tr>
                          </thead>
                          <tbody>
@@ -76,20 +76,7 @@ const SalesList = () => {
                                         <td className="border px-4 py-4">{sale.quantity_sold}</td>
                                         <td className="border px-4 py-4">{sale.sale_date}</td>
                                         <td className="border px-4 py-4">{sale.total_price}</td>
-                                        <td className="border px-4 py-4">
-                                             <Link
-                                                  to={`/sales/${sale.sales_id}/update`}
-                                                  className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
-                                             >
-                                                  Edit
-                                             </Link>
-                                             <button
-                                                  onClick={() => handleDelete(sale.sales_id)}
-                                                  className="bg-red-500 text-white px-2 py-1 rounded"
-                                             >
-                                                  Delete
-                                             </button>
-                                        </td>
+
                                    </tr>
                               ))}
                          </tbody>

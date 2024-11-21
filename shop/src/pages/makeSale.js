@@ -21,6 +21,21 @@ const MakeSale = () => {
                });
      }, []);
 
+     useEffect(() => {
+          // Fetch price of selected product whenever it changes
+          if (selectedProduct) {
+               axios.get(`http://localhost:4001/Products/getProductPrice/${selectedProduct}`)
+                    .then(response => {
+                         setPrice(response.data.price); // Assuming the response contains the price
+                    })
+                    .catch(error => {
+                         console.error('Error fetching product price', error);
+                    });
+          } else {
+               setPrice(''); // Clear price when no product is selected
+          }
+     }, [selectedProduct]);
+
      const handleSubmit = async (e) => {
           e.preventDefault();
 
@@ -29,7 +44,7 @@ const MakeSale = () => {
                const response = await axios.post('http://localhost:4001/Sales/makeSale', {
                     product_id: selectedProduct,
                     quantity_sold: quantitySold,
-                    total_price: price,
+                    total_price: price * quantitySold, // Calculate total price
                     sale_date: saleDate
                });
 
@@ -87,15 +102,15 @@ const MakeSale = () => {
                               />
                          </div>
 
-                         {/* Price Input */}
+                         {/* Price Display */}
                          <div>
-                              <label htmlFor="price" className="block text-gray-700 font-medium">Price</label>
+                              <label htmlFor="price" className="block text-gray-700 font-medium">Price (per unit)</label>
                               <input
-                                   type="number"
+                                   type="text"
                                    id="price"
-                                   value={price}
-                                   onChange={(e) => setPrice(e.target.value)}
-                                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   value={price || 'Select a product to view price'}
+                                   readOnly
+                                   className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
                               />
                          </div>
 
@@ -128,3 +143,4 @@ const MakeSale = () => {
 };
 
 export default MakeSale;
+

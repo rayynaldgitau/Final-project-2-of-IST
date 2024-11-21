@@ -98,7 +98,29 @@ module.exports = {
           } catch (error) {
                next(error);
           }
-     }
+     },
+
+     getProductPrice: async (req, res, next) => {
+          try {
+               const id = req.params.productId;
+
+               // Fetch product by ID and include only the price 
+               const productData = await product.findOne({
+                    where: { product_id: id },
+                    attributes: ['price'] // Only retrieve the price 
+               });
+
+               if (!productData) {
+                    throw createError(404, "Product not found");
+               }
+
+               res.status(200).json({ price: productData.price });
+          } catch (error) {
+               next(error);
+          }
+     },
+
+
 
 
 }

@@ -11,5 +11,6 @@ routes.get('/getProducts', ProductController.getAllProducts)
 routes.put('/updateProduct/:id', ProductController.updateProduct)
 routes.delete('/deleteProduct/:id', ProductController.deleteProduct)
 routes.get('/getProductz', productController.getProductz)
+routes.get('/getProductPrice/:productId', productController.getProductPrice);
 
 module.exports = routes;
