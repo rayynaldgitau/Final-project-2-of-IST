@@ -21,9 +21,9 @@ const ProductsPage = () => {
                });
      };
 
-     const handleDelete = (productId) => {
+     const handleDelete = (id) => {
           if (window.confirm('Are you sure you want to delete this product?')) {
-               axios.delete(`http://localhost:4001/Products/delete/${productId}`)
+               axios.delete(`http://localhost:4001/Products/deleteProduct/${id}`)
                     .then(() => {
                          alert('Product deleted successfully!');
                          fetchProducts(); // Refresh product list after deletion

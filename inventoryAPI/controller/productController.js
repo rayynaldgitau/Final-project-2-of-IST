@@ -98,18 +98,13 @@ module.exports = {
           try {
                const id = req.params.id;
 
-               if (!id) {
-                    return res.status(400).send("Product ID is required");
+               const deleteItem = await product.destroy({ where: { product_id: id } });
+
+               if (deleteItem === 0) {
+                    throw createError(404, "Product not found");
                }
 
-               const product = await product.findByPk(id);
-
-               if (!product) {
-                    return res.status(404).send("Product not found");
-               }
-
-               await product.destroy();
-               res.status(200).send(`Product with ID ${id} deleted successfully`);
+               res.status(200).json({ message: "Product deleted successfully" })
           } catch (error) {
                console.error(error);
                next(error);
