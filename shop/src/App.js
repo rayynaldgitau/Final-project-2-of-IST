@@ -17,7 +17,7 @@ import UpdateSale from './pages/editSales';
 import ProductsPage from './pages/productsPage';
 import MakeSale from './pages/makeSale';
 import AddProduct from './pages/AddProducts';
-import UpdateProduct from './pages/editProducts';
+import EditProductsPage from './pages/editProducts';
 import SuppliersPage from './pages/suppliersPage';
 import AddSupplier from './pages/AddSupplier';
 import UpdateSupplier from './pages/editSupplier';
@@ -47,7 +47,7 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/makeSale" element={<MakeSale />} />
           <Route path="/product/add" element={<AddProduct />} />
-          <Route path="/product/:id/update" element={<UpdateProduct />} />
+          <Route path="/editProduct/:productId" element={<EditProductsPage />} />
           <Route path="/suppliers" element={<SuppliersPage />} />
           <Route path="/supplier/add" element={<AddSupplier />} />
           <Route path="/supplier/:id/update" element={<UpdateSupplier />} />

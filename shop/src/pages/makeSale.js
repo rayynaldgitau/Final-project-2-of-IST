@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from 'axios';
 import NavBar from '../components/navbar';
 
@@ -10,11 +11,14 @@ const MakeSale = () => {
      const [saleDate, setSaleDate] = useState('');
      const [message, setMessage] = useState('');
 
+     const navigate = useNavigate(); // Initialize the navigate function
+
      useEffect(() => {
           // Fetch the list of products when the component mounts
-          axios.get('http://localhost:4001/Products/getProducts')
+          axios
+               .get('http://localhost:4001/Products/getProducts')
                .then(response => {
-                    setProducts(response.data);  // Assuming response is an array of products
+                    setProducts(response.data); // Assuming response is an array of products
                })
                .catch(error => {
                     console.error('Error fetching products', error);
@@ -24,7 +28,8 @@ const MakeSale = () => {
      useEffect(() => {
           // Fetch price of selected product whenever it changes
           if (selectedProduct) {
-               axios.get(`http://localhost:4001/Products/getProductPrice/${selectedProduct}`)
+               axios
+                    .get(`http://localhost:4001/Products/getProductPrice/${selectedProduct}`)
                     .then(response => {
                          setPrice(response.data.price); // Assuming the response contains the price
                     })
@@ -51,14 +56,8 @@ const MakeSale = () => {
                setMessage('Sale created successfully!');
                console.log(response.data);
 
-               // After making the sale, re-fetch the products to reflect updated stock
-               axios.get('http://localhost:4001/Products/getProducts')
-                    .then(response => {
-                         setProducts(response.data);  // Update products with new quantity
-                    })
-                    .catch(error => {
-                         console.error('Error fetching products', error);
-                    });
+               // Navigate back to the sales page after successful sale
+               setTimeout(() => navigate('/sales'), 2000); // Delay for 2 seconds to display the message
           } catch (error) {
                setMessage('Error creating sale.');
                console.error(error);

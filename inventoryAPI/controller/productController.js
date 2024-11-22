@@ -32,15 +32,21 @@ module.exports = {
      //get Product by id
      getProduct: async (req, res, next) => {
           try {
-               const id = req.params.id
-               const product = await product.findOne({ where: { product_id: id } })
+               const id = req.params.id;
 
-               if (!product) {
-                    throw createError(404, "Product does not exist")
+               // Ensure correct field name for the product ID (adjust if necessary)
+               const foundProduct = await product.findOne({ where: { product_id: id } });
+
+               if (!foundProduct) {
+                    // If no product is found, return a 404 error
+                    throw createError(404, "Product does not exist");
                }
-               res.status(200).send(product)
+
+               // Send the found product as the response
+               res.status(200).send(foundProduct);
           } catch (error) {
-               next(error)
+               // Pass any errors to the error handling middleware
+               next(error);
           }
      },
 
@@ -58,31 +64,58 @@ module.exports = {
      updateProduct: async (req, res, next) => {
           try {
                const id = req.params.id;
-               const updated = await db.products.update(req.body, { where: { product_id: id } });
 
-               if (!updated[0]) {
-                    return res.status(404).json({ message: 'Product not found' });
+               // Check if the request body contains fields to update
+               if (Object.keys(req.body).length === 0) {
+                    return res.status(400).json({ message: 'No fields provided to update' });
                }
 
-               const updatedProduct = await db.products.findByPk(id);
-               res.status(200).json(updatedProduct);
+               // Perform the update
+               const updated = await product.update(req.body, { where: { product_id: id } });
+
+               // Check if the update affected any rows
+               if (!updated[0]) {
+                    return res.status(404).json({ message: 'Product not found or no changes made' });
+               }
+
+               // Fetch the updated product
+               const updatedProduct = await product.findByPk(id);
+
+               res.status(200).json({
+                    message: 'Product updated successfully',
+                    product: updatedProduct
+               });
           } catch (error) {
                next(error);
           }
      },
 
 
+
+
      //delete Product
      deleteProduct: async (req, res, next) => {
           try {
-               const id = req.params.id
+               const id = req.params.id;
 
-               await product.destroy({ where: { product_id: id } })
-               res.status(200).send("Product Deleted Successfully")
+               if (!id) {
+                    return res.status(400).send("Product ID is required");
+               }
+
+               const product = await product.findByPk(id);
+
+               if (!product) {
+                    return res.status(404).send("Product not found");
+               }
+
+               await product.destroy();
+               res.status(200).send(`Product with ID ${id} deleted successfully`);
           } catch (error) {
-               next(error)
+               console.error(error);
+               next(error);
           }
      },
+
 
      getProductz: async (req, res, next) => {
           try {

@@ -34,17 +34,19 @@ const SalesList = () => {
           }
      };
 
-     const handleDelete = async (id) => {
-          try {
-               await axios.delete(`http://localhost:4001/sales/deleteSale/${id}`);
-               const updatedSales = sales.filter(sale => sale.sales_id !== id);
-               setSales(updatedSales);
-               const newTotalAmount = calculateTotalAmount(updatedSales);
-               setTotalAmount(newTotalAmount);
-          } catch (error) {
-               console.error("There was an error deleting the sale!", error);
-          }
-     };
+
+     // Function to delete products
+     // const handleDelete = async (id) => {
+     //      try {
+     //           await axios.delete(`http://localhost:4001/sales/deleteSale/${id}`);
+     //           const updatedSales = sales.filter(sale => sale.sales_id !== id);
+     //           setSales(updatedSales);
+     //           const newTotalAmount = calculateTotalAmount(updatedSales);
+     //           setTotalAmount(newTotalAmount);
+     //      } catch (error) {
+     //           console.error("There was an error deleting the sale!", error);
+     //      }
+     // };
 
      // Helper function to get the product name by ID
      const getProductName = (productId) => {
@@ -60,7 +62,7 @@ const SalesList = () => {
                     <table className="min-w-full bg-white my-10">
                          <thead>
                               <tr>
-                                   <th className="py-2">ID</th>
+
                                    <th className="py-2">Product Name</th> {/* Changed from Product ID */}
                                    <th className="py-2">Quantity Sold</th>
                                    <th className="py-2">Sale Date</th>
@@ -71,7 +73,7 @@ const SalesList = () => {
                          <tbody>
                               {sales.map(sale => (
                                    <tr key={sale.sales_id}>
-                                        <td className="border px-4 py-4">{sale.sales_id}</td>
+                                        {/* <td className="border px-4 py-4">{sale.sales_id}</td> */}
                                         <td className="border px-4 py-4">{getProductName(sale.product_id)}</td> {/* Product Name */}
                                         <td className="border px-4 py-4">{sale.quantity_sold}</td>
                                         <td className="border px-4 py-4">{sale.sale_date}</td>

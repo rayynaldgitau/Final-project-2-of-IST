@@ -1,23 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NavBar from '../components/navbar';
 
 const ProductsPage = () => {
      const [products, setProducts] = useState([]);
-     const [productCount, setProductCount] = useState(0);  // State to hold the product count
+     const navigate = useNavigate(); // For navigation
 
      useEffect(() => {
-          // Fetch updated product data (to reflect quantity changes)
+          fetchProducts();
+     }, []);
+
+     const fetchProducts = () => {
           axios.get('http://localhost:4001/Products/getProducts')
                .then(response => {
                     setProducts(response.data);  // Assuming response is an array of products
-                    setProductCount(response.data.length);  // Update product count
                })
                .catch(error => {
                     console.error('Error fetching products:', error);
                });
-     }, []);
+     };
+
+     const handleDelete = (productId) => {
+          if (window.confirm('Are you sure you want to delete this product?')) {
+               axios.delete(`http://localhost:4001/Products/delete/${productId}`)
+                    .then(() => {
+                         alert('Product deleted successfully!');
+                         fetchProducts(); // Refresh product list after deletion
+                    })
+                    .catch(error => {
+                         console.error('Error deleting product:', error);
+                    });
+          }
+     };
+
+
+     const handleEdit = (productId) => {
+          navigate(`/editProduct/${productId}`); // Navigate to the EditProduct page
+     };
 
      return (
           <>
@@ -27,7 +47,7 @@ const ProductsPage = () => {
                          <h2 className="text-2xl font-bold">Product List</h2>
 
                          {/* Add Product Button */}
-                         <Link to="/product/add" className="float-right">
+                         <Link to="/product/add">
                               <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
                                    Add Product
                               </button>
@@ -36,14 +56,35 @@ const ProductsPage = () => {
 
                     {/* Display Product Count */}
                     <div className="text-lg font-semibold mb-4">
-                         Total Products: {productCount}
+                         Total Products: {products.length} {/* Dynamically update product count */}
                     </div>
 
                     <ul className="space-y-4">
                          {products.map(product => (
                               <li key={product.product_id} className="flex justify-between items-center bg-gray-100 p-4 rounded-md shadow-sm">
-                                   <span className="text-lg font-semibold">{product.productName}</span>
-                                   <span className="text-sm text-gray-600">Quantity: {product.productQuantity}</span>
+                                   <div>
+                                        <span className="text-lg font-semibold">{product.productName}</span>
+                                        <span className="text-sm text-gray-600 ml-4">Quantity: {product.productQuantity}</span>
+                                        {/* Display Price */}
+                                        <span className="text-sm text-gray-600 ml-4">Price: ${product.price}</span>
+                                   </div>
+                                   <div className="flex space-x-2">
+                                        {/* Edit Button */}
+                                        <button
+                                             onClick={() => handleEdit(product.product_id)}
+                                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                        >
+                                             Edit
+                                        </button>
+
+                                        {/* Delete Button */}
+                                        <button
+                                             onClick={() => handleDelete(product.product_id)}
+                                             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                        >
+                                             Delete
+                                        </button>
+                                   </div>
                               </li>
                          ))}
                     </ul>
@@ -53,6 +94,9 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
+
+
+
 
 
 
